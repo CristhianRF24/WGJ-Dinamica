@@ -5,7 +5,8 @@ export const App = () => {
   return (
     <NavigationContainer>
 
-      <Text>Hola Mundo WGJ</Text>
+      <Text>Hola Mundo WGJ- Bolivia</Text>
+
     </NavigationContainer>
   )
 }
