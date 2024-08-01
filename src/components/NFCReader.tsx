@@ -2,10 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert, StyleSheet, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 
+type Props = {
+  moneda: number;
+  setMoneda: (moneda: number) => void;
+}
 // Inicializa NFC Manager
 NfcManager.start();
-const limite = 128;
-const NFCReader = () => {
+const limite = 40;
+
+const NFCReader = (props:Props) => {
+
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
@@ -33,7 +39,16 @@ const NFCReader = () => {
       await NfcManager.getTag();
       
       // Incrementa el contador cuando se escanea una etiqueta NFC
-      setCounter(prevCounter => prevCounter + 1);
+      setCounter(prevCounter => {
+        const newCounter = prevCounter + 1;
+        if(newCounter >= limite){
+          Alert.alert('¡Felicidades!', 'Has encontrado todas las monedas');
+          props.setMoneda(props.moneda + 1);
+          return 0;
+
+        }
+           return newCounter;
+      });
     } catch (ex) {
       console.warn(ex);
       Alert.alert('Error', 'Failed to read NFC tag');
@@ -43,7 +58,8 @@ const NFCReader = () => {
   };
 
   return (
-    <ImageBackground source={require('../assets/Fondo1.png')} style={style.background}>
+    
+    
 
     <View style={style.container}>
       <View style={style.buttonContainer}>
@@ -53,9 +69,15 @@ const NFCReader = () => {
       </TouchableOpacity>
           {/* <Button title="BUSCAME" onPress={readNfc}/> */}
       </View>
-      <Text style={style.text}> Counter: {counter} / {limite}</Text>
+
+      <View style={style.counterContainer}>
+        
+      <Text style={style.text}> <Image source={require('../assets/gameIcon.png')} style={style.icon}/> {counter} / {limite}</Text>
+      </View>
+
+
     </View>
-    </ImageBackground>
+    
   );
 };
 
@@ -95,6 +117,17 @@ buttonImage: {
   width: '100%',
   height: '100%',
   resizeMode: 'contain',
+},
+counterContainer: {
+  position: 'absolute',
+  bottom: 60, // Ajusta la posición inferior según sea necesario
+
+  alignItems: 'center',
+},
+icon: {
+  width: 45,
+  height: 45,
+  marginRight: 8, // Espacio entre el icono y el texto
 },
 
 })
